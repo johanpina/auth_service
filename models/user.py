@@ -1,0 +1,21 @@
+from config.database import Base
+from sqlalchemy import Column, Integer, String, Float
+import uuid
+from sqlalchemy.dialects.postgresql import UUID
+
+class Movie(Base):
+    __tablename__ = 'movies'
+
+    id = Column(Integer, primary_key=True)
+    title = Column(String)
+    overview = Column(String)
+    year = Column(Integer)
+    rating = Column(Float)
+    category = Column(String)
+
+class User(Base):
+    __tablename__ = 'users'
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    username = Column(String, unique=True, nullable=False)
+    password = Column(String, nullable=False)
+    email = Column(String, unique=True, nullable=False)
