@@ -56,10 +56,12 @@ def signup(new_user: User, db: Session = Depends(get_db)):
     return JSONResponse(status_code=201, content={"message": "User created successfully!"})
 
 @app.post('/login/',tags=["Auth"])
-def login(inputUser: User):
-    for user in users:
-        if user.username == inputUser.username and user.password == inputUser.password:
-            token: str = create_token(User(**user.dict()).dict())
-            return JSONResponse(status_code=200, content=token)
+def login(inputUser: User, db: Session = Depends(get_db)):
+    user = db.query(UserModel).filter(UserModel.username == inputUser.username).first()
+    if not user or user.password != inputUser.password:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
     
-    return JSONResponse(status_code=404 ,content={"message": "Invalid credentials!"})
+    token: str = create_token(User(**user.__dict__).dict())
+    
+    return JSONResponse(status_code=200, content=token)
+    
